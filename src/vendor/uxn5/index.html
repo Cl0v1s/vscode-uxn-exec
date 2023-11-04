@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Varvara Emulator</title>
+	<script src="src/uxn.js"></script>
+	<script src="src/uxn-wasm.js"></script>
+	<script src="src/emu.js"></script>
+	<script src="src/devices/console.js"></script>
+	<script src="src/devices/controller.js"></script>
+	<script src="src/devices/mouse.js"></script>
+	<script src="src/devices/screen.js"></script>
+	<script src="src/devices/datetime.js"></script>
+</head>
+<body>
+	<div id='metadata'>Drag rom on window to start</div>
+	<div id="screen" style="position: relative;">
+		<canvas id="bgcanvas" width="100" height="100"></canvas>
+		<canvas id="fgcanvas" width="100" height="100"></canvas>
+	</div>
+	<input type="text" id="console_input" placeholder="Console">
+	<pre id='console_std'></pre>
+	<pre id='console_err'></pre>
+</body>
+<script type="text/javascript">
+	'use strict'
+	const emulator = new Emu()
+	emulator.init().then(() => {
+		emulator.console.write_el = document.getElementById("console_std")
+		emulator.console.error_el = document.getElementById("console_err")
+		emulator.bgCanvas = document.getElementById("bgcanvas");
+		emulator.fgCanvas = document.getElementById("fgcanvas");
+		emulator.screen.bgctx = emulator.bgCanvas.getContext("2d")
+		emulator.screen.fgctx = emulator.fgCanvas.getContext("2d")
+		emulator.fgCanvas.addEventListener("pointermove", emulator.pointer_moved);
+		emulator.fgCanvas.addEventListener("pointerdown", emulator.pointer_down);
+		emulator.fgCanvas.addEventListener("pointerup", emulator.pointer_up);
+		window.addEventListener("keydown", emulator.controller.keyevent);
+		window.addEventListener("keyup", emulator.controller.keyevent);
+
+		// Input box
+
+		const console_input = document.getElementById("console_input")
+		console_input.addEventListener("keyup", function(event) {
+			if (event.key === "Enter") {
+				let query = console_input.value
+				for (let i = 0; i < query.length; i++)
+					emulator.console.input(query.charAt(i).charCodeAt(0), 1)
+				emulator.console.input(0x0a, 1)
+				console_input.value = ""
+			}
+		});
+
+		// Animation callback
+
+		function step() {
+			emulator.screen_callback();
+			window.requestAnimationFrame(step)
+		}
+
+		emulator.screen.set_size(512, 320)
+		window.requestAnimationFrame(step);
+
+		// Support dropping files
+
+		const target = document.body
+		target.addEventListener("dragover", (event) => {
+			event.preventDefault();
+		});
+		target.addEventListener("drop", (ev) => {
+			ev.preventDefault();
+			let file = ev.dataTransfer.files[0],
+				reader = new FileReader()
+			reader.onload = function (event) {
+				let rom = new Uint8Array(event.target.result)
+				emulator.screen.set_size(512, 320)
+				emulator.uxn.load(rom).eval(0x0100)
+				document.getElementById("metadata").innerHTML = file.name
+			};
+			reader.readAsArrayBuffer(file)
+		});
+	});
+</script>
+
+<style>
+	body { font-family:monospace; overflow:hidden; height:100vh; padding:15px; margin:0 }
+	textarea { resize:none; width:100%; height:100vh; border:0; padding:10px; margin-bottom:0px; background:#efefef }
+	textarea:focus { outline: none !important }
+	div#term { width:100%; background:#000; padding:10px; color:white; height:55px; overflow:scroll; white-space:pre; display:none }
+	div#stack { width:100%; height:25px; background:#72dec2; padding:10px; margin-bottom:20px;font-weight:bold; display:none }
+	body.active textarea { height:calc(100% - 140px) }
+	body.active div#term, body.active div#stack { display:block }
+	#screen { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none; touch-action: none; margin-bottom: 15px }
+	#screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000 }
+	#screen #fgcanvas { position: absolute; left: 2px; top: 2px; z-index: 1 }
+	#metadata { margin-bottom: 15px }
+	#console_err { color:red; font-weight:bold }
+</style>
+
+</html> 
+
