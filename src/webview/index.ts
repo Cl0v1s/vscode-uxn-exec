@@ -1,6 +1,6 @@
 declare var window: any;
 declare var document: any;
-declare var webASM: string;
+declare var acquireVsCodeApi: () => any;
 // @ts-ignore
 import assemble from './../vendor/uxnasm-js/assembler.js';
 // @ts-ignore
@@ -8,6 +8,7 @@ import { Emu } from './../vendor/uxn5/src/emu.js';
 
 function buffer(data: string) { return new Uint8Array((data.match(/../g) as RegExpMatchArray).map((h: string) =>parseInt(h,16))) };
 
+const vscode = acquireVsCodeApi();
 const emulator = new Emu();
 
 async function init() {
@@ -46,6 +47,7 @@ async function init() {
 
     emulator.screen.set_size(512, 320)
     window.requestAnimationFrame(step);
+    
 }
 
 function run(uxntal: string) {
@@ -65,6 +67,7 @@ window.addEventListener('message', async (event: any) => {
     const message = event.data; // The JSON data our extension sent
     switch (message.command) {
         case 'init': {
+            vscode.setState({ documentUri: message.documentUri });
             await init();
             run(message.code);
         }

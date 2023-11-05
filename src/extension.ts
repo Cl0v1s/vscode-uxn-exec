@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerTextEditorCommand('uxn-exec.run', (editor) => {
-			UxnPanel.createOrShow(context.extensionUri, editor);
+			UxnPanel.createOrShow(context.extensionUri, editor.document);
 		})
 	);
 
@@ -11,10 +11,10 @@ export function activate(context: vscode.ExtensionContext) {
 		// Make sure we register a serializer in activation event
 		vscode.window.registerWebviewPanelSerializer(UxnPanel.viewType, {
 			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-				console.log(`Got state: ${state}`);
+				console.log(state);
 				// Reset the webview options so we use latest uri for `localResourceRoots`.
 				webviewPanel.webview.options = getWebviewOptions(context.extensionUri);
-				UxnPanel.revive(webviewPanel, context.extensionUri);
+				UxnPanel.revive(webviewPanel, context.extensionUri, state.documentUri);
 			}
 		});
 	}
@@ -38,38 +38,45 @@ class UxnPanel {
 
 	public static readonly viewType = 'uxn';
 
-	private readonly _editor: vscode.TextEditor;
+	private readonly _document: vscode.TextDocument;
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
 
-	public static createOrShow(extensionUri: vscode.Uri, editor: vscode.TextEditor) {
+	public static createOrShow(extensionUri: vscode.Uri, document: vscode.TextDocument) {
 		const column = 2;
 
 		// If we already have a panel, show it.
 		if (UxnPanel.currentPanel) {
-			UxnPanel.currentPanel._panel.reveal(column);
-			return;
+			UxnPanel.currentPanel.dispose();
+			UxnPanel.currentPanel = undefined;
 		}
 
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
 			UxnPanel.viewType,
-			'uxn',
+			`uxn - ${document.uri.path}`,
 			column || vscode.ViewColumn.One,
 			getWebviewOptions(extensionUri),
 		);
 
-		UxnPanel.currentPanel = new UxnPanel(panel, extensionUri, editor);
+		UxnPanel.currentPanel = new UxnPanel(panel, extensionUri, document);
 	}
 
-	public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		//UxnPanel.currentPanel = new UxnPanel(panel, extensionUri);
+	public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, documentUri: vscode.Uri) {
+		const document = vscode.workspace.textDocuments.find((d) => d.uri.path === documentUri.path);
+		if(!document) {
+			setTimeout(() => {
+				UxnPanel.currentPanel?.dispose();
+			}, 200)
+			return;
+		}
+		UxnPanel.currentPanel = new UxnPanel(panel, extensionUri, document);
 	}
 
-	private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, editor: vscode.TextEditor) {
+	private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, document: vscode.TextDocument) {
 		this._panel = panel;
-		this._editor = editor;
+		this._document = document;
 		this._extensionUri = extensionUri;
 
 		// Listen for when the panel is disposed
@@ -79,7 +86,7 @@ class UxnPanel {
 
 		let timer: NodeJS.Timeout | undefined;
 		vscode.workspace.onDidChangeTextDocument((e) => {
-			if(e.document !== editor.document) {
+			if(e.document.uri.path !== this._document.uri.path) {
 				return;
 			}
 			if(timer) {
@@ -90,11 +97,11 @@ class UxnPanel {
 		});
 
 		this._panel.webview.html = this._getHtmlForWebview(this._panel.webview);
-		this._panel.webview.postMessage({ command: 'init', code: this._editor.document.getText() });
+		this._panel.webview.postMessage({ command: 'init', code: this._document.getText(), documentUri: this._document.uri });
 	}
 
 	private _update() {
-		this.run(this._editor.document.getText());
+		this.run(this._document.getText());
 	}
 
 	public run(code: string) {

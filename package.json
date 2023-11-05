@@ -4,12 +4,14 @@
   "description": "",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.84.0"
+    "vscode": "^1.83.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onWebviewPanel:uxn"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
@@ -31,12 +33,13 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
+    "@vscode/vsce": "^2.22.0",
     "arcsecond": "^4.1.0"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
-    "@types/vscode": "^1.84.0",
+    "@types/vscode": "^1.83.0",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
