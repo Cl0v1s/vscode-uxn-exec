@@ -1,6 +1,6 @@
 {
-  "name": "uxn-exec",
-  "displayName": "uxn-exec",
+  "name": "vscode-uxn-exec",
+  "displayName": "vscode-uxn-exec",
   "description": "",
   "version": "0.0.1",
   "engines": {
