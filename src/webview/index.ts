@@ -5,6 +5,8 @@ declare var acquireVsCodeApi: () => any;
 import assemble from './../vendor/uxnasm-js/assembler.js';
 // @ts-ignore
 import { Emu } from './../vendor/uxn5/src/emu.js';
+// @ts-ignore
+import { Screen } from './../vendor/uxn5/src/devices/screen.js';
 
 function buffer(data: string) { return new Uint8Array((data.match(/../g) as RegExpMatchArray).map((h: string) =>parseInt(h,16))) };
 
@@ -54,6 +56,8 @@ function run(uxntal: string) {
     // start
     try {
         const rom = buffer(assemble(uxntal));
+        emulator.screen.blank_screen(emulator.screen.bgctx);
+        emulator.screen.blank_screen(emulator.screen.fgctx);
         emulator.console.write_el.innerHTML = `<span style="opacity: 0.7">${new Date().toLocaleTimeString(undefined, { hour: "2-digit", "minute": "2-digit", "second": "2-digit"})} -- reload --</span>\n`;
         emulator.console.error_el.innerHTML = `<span style="opacity: 0.7">${new Date().toLocaleTimeString(undefined, { hour: "2-digit", "minute": "2-digit", "second": "2-digit"})} -- reload --</span>\n`;
         emulator.uxn.load(rom).eval(0x0100);

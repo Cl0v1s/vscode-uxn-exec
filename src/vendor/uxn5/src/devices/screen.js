@@ -14,10 +14,11 @@ export function Screen(emu)
 	this.height = 320
 	this.colors = [{r: 0, g: 0, b:0}];
 
-	this.blank_screen = () => {
+	this.blank_screen = (ctx = undefined) => {
+		if(!ctx) ctx = this.bgctx;
 		const c = this.colors[0]
-		this.bgctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
-		this.bgctx.fillRect(0, 0, this.width, this.height)
+		ctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
+		ctx.fillRect(0, 0, this.width, this.height)
 	}
 
 	this.draw_pixel = (ctrl,x,y,move) => {
