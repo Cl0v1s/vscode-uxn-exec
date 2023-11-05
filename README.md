@@ -3,6 +3,9 @@
 vscode-uxn-exec is a Visual Studio Code extension that allows you to assemble and run [UXN](https://wiki.xxiivv.com/site/uxn.html) (UxnTal) code in real time. 
 UXN is a virtual stack-based computer with a unique set of assembly instructions, designed for creative coding and interactive art. With this extension, you can streamline your UXN development workflow directly within Visual Studio Code.
 
+Yup, I know that using vscode and all that electron stuff is quiet against the principles behind the whole uxn project. BUT I need some tools to be able to play 
+with the language when I'm on the road with only my tablet (and it's extensive battery life), so here we are.
+
 ## Features
 
 - Assemble and run UXN code in real time.
