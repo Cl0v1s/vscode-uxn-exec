@@ -1,7 +1,7 @@
 {
   "name": "vscode-uxn-exec",
   "displayName": "vscode-uxn-exec",
-  "description": "",
+  "description": "Assemble and run uxntal source code on the fly",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.83.0"
@@ -21,6 +21,7 @@
       }
     ]
   },
+  "license": "CC0-1.0",
   "scripts": {
     "vscode:prepublish": "yarn run package",
     "compile": "webpack",
