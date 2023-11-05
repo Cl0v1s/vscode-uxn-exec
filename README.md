@@ -1,71 +1,35 @@
-# uxn-exec README
+# vscode-uxn-exec
 
-This is the README for your extension "uxn-exec". After writing up a brief description, we recommend including the following sections.
+vscode-uxn-exec is a Visual Studio Code extension that allows you to assemble and run [UXN](https://wiki.xxiivv.com/site/uxn.html) (UxnTal) code in real time. 
+UXN is a virtual stack-based computer with a unique set of assembly instructions, designed for creative coding and interactive art. With this extension, you can streamline your UXN development workflow directly within Visual Studio Code.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Assemble and run UXN code in real time.
+- Easily execute your UXN code from within Visual Studio Code.
+- Supports convenient keyboard shortcuts for quick execution.
 
-For example if there is an image subfolder under your extension project workspace:
+## Usage
 
-\!\[feature X\]\(images/feature-x.png\)
+1. Open a `.uxn` file in Visual Studio Code.
+2. Use the keyboard shortcut `Ctrl + Shift + P` (or `Cmd + Shift + P` on macOS) to open the command palette.
+3. Type `Run UXN` and select it from the dropdown list.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+The extension will assemble and run the UXN code in your file, providing immediate feedback on the output.
 
-## Requirements
+## License
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+This extension is provided under the [CC0 1.0 Universal (CC0 1.0) Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/). You are free to use, modify, and distribute this software for any purpose without any restrictions. See the [LICENSE](LICENSE) file for more details.
 
-## Extension Settings
+## Support
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+If you encounter any issues, have questions, or would like to contribute to this extension, please visit the [GitHub repository](https://github.com/Cl0v1s/vscode-uxn-exec) for vscode-uxn-exec.
 
-For example:
+## Acknowledgments
 
-This extension contributes the following settings:
+Certainly! Here's the updated Acknowledgments section:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+## Acknowledgments
 
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Special thanks to the UXN community and the Visual Studio Code extension development community for their support and contributions. 
+This work is based on the [UXN assembler written in JavaScript](https://github.com/rafapaezbas/uxnasm-js) by [rafapaezbas](https://github.com/rafapaezbas) and the [Varvara emulator in JavaScript](https://git.sr.ht/~rabbits/uxn5) by [Rek](https://merveilles.town/@rek), which have been integral in making this extension possible.
