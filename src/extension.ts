@@ -85,7 +85,7 @@ class UxnPanel {
 
 
 		let timer: NodeJS.Timeout | undefined;
-		vscode.workspace.onDidChangeTextDocument((e) => {
+		const handle = vscode.workspace.onDidChangeTextDocument((e) => {
 			if(e.document.uri.path !== this._document.uri.path) {
 				return;
 			}
@@ -95,6 +95,7 @@ class UxnPanel {
 			};
 			timer = setTimeout(() => { this._update(); timer = undefined; }, 3000);
 		});
+		this._disposables.push(handle);
 
 		this._panel.webview.html = this._getHtmlForWebview(this._panel.webview);
 		this._panel.webview.postMessage({ command: 'init', code: this._document.getText(), documentUri: this._document.uri });
