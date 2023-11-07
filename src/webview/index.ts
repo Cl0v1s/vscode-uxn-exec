@@ -1,35 +1,20 @@
-declare var window: any;
-declare var document: any;
+declare var window: Window;
+declare var document: Document;
 declare var acquireVsCodeApi: () => any;
 // @ts-ignore
 import assemble from './../vendor/uxnasm-js/assembler.js';
 // @ts-ignore
-import { Emu } from './../vendor/uxn5/src/emu.js';
-// @ts-ignore
-import { Screen } from './../vendor/uxn5/src/devices/screen.js';
+import { Emu } from '../vendor/uxn5/src/emu';
 
 function buffer(data: string) { return new Uint8Array((data.match(/../g) as RegExpMatchArray).map((h: string) =>parseInt(h,16))) };
 
 const vscode = acquireVsCodeApi();
 
 async function init() {
-    const emulator = new Emu();
+    const emulator = new Emu(document.getElementById("console_std") as HTMLElement, document.getElementById("console_err")  as HTMLElement, document.getElementById("bgcanvas")  as HTMLCanvasElement, document.getElementById("fgcanvas")  as HTMLCanvasElement);
     await emulator.init();
-    emulator.console.write_el = document.getElementById("console_std");
-    emulator.console.error_el = document.getElementById("console_err");
-    emulator.bgCanvas = document.getElementById("bgcanvas");
-    emulator.fgCanvas = document.getElementById("fgcanvas");
-    emulator.screen.bgctx = emulator.bgCanvas.getContext("2d")
-    emulator.screen.fgctx = emulator.fgCanvas.getContext("2d")
-    emulator.fgCanvas.addEventListener("pointermove", emulator.pointer_moved);
-    emulator.fgCanvas.addEventListener("pointerdown", emulator.pointer_down);
-    emulator.fgCanvas.addEventListener("pointerup", emulator.pointer_up);
-    window.addEventListener("keydown", emulator.controller.keyevent);
-    window.addEventListener("keyup", emulator.controller.keyevent);
 
-    // Input box
-
-    const console_input = document.getElementById("console_input")
+    const console_input = document.getElementById("console_input") as HTMLInputElement;
     console_input.addEventListener("keyup", function(event: any) {
         if (event.key === "Enter") {
             let query = console_input.value

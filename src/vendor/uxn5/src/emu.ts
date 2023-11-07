@@ -1,31 +1,71 @@
 'use strict'
-
+// @ts-ignore
 import { UxnWASM } from './uxn-wasm';
+// @ts-ignore
 import { Uxn } from './uxn';
+// @ts-ignore
 import { Console } from './devices/console';
+// @ts-ignore
 import { Controller } from './devices/controller';
+// @ts-ignore
 import { Screen } from './devices/screen';
+// @ts-ignore
 import { DateTime } from './devices/datetime';
+// @ts-ignore
 import { Mouse } from './devices/mouse';
-
+// @ts-ignore
 import { peek16 } from './utils';
 
-export function Emu ()
-{
-	if (typeof UxnWASM !== 'undefined') {
-		console.log("Using WebAssembly core");
-		this.uxn = new (UxnWASM.Uxn)(this)
-	} else {
-		console.log("Using Vanilla JS core");
-		this.uxn = new Uxn(this)
-	}
-	this.console = new Console(this)
-	this.controller = new Controller(this)
-	this.screen = new Screen(this)
-	this.datetime = new DateTime(this)
-	this.mouse= new Mouse(this)
+export class Emu {
+	public uxn: Uxn | UxnWASM.Uxn;
+	public console:  Console;
+	public controller: Controller;
+	public screen: Screen;
+	public datetime: DateTime;
+	public mouse: Mouse;
+	public fgCanvas: HTMLCanvasElement;
+	public bgCanvas: HTMLCanvasElement;
 
-	this.dei = (port) => {
+	constructor(console_std: HTMLElement, console_err: HTMLElement, bgCanvas: HTMLCanvasElement, fgCanvas: HTMLCanvasElement) {
+		if (typeof UxnWASM !== 'undefined') {
+			console.log("Using WebAssembly core");
+			this.uxn = new (UxnWASM.Uxn)(this)
+		} else {
+			console.log("Using Vanilla JS core");
+			this.uxn = new Uxn(this)
+		}
+
+		this.bgCanvas = bgCanvas;
+		this.fgCanvas = fgCanvas;
+
+		this.console = new Console(this)
+		this.console.write_el = console_std;
+		this.console.error_el = console_err;
+
+		this.controller = new Controller(this)
+		window.addEventListener("keydown", this.controller.keyevent);
+		window.addEventListener("keyup", this.controller.keyevent);
+
+		this.screen = new Screen(this)
+		this.screen.bgctx = this.bgCanvas.getContext("2d");
+		this.screen.fgctx = this.fgCanvas.getContext("2d");
+		this.fgCanvas.addEventListener("pointermove", this.pointer_moved);
+		this.fgCanvas.addEventListener("pointerdown", this.pointer_down);
+		this.fgCanvas.addEventListener("pointerup", this.pointer_up);
+
+		this.datetime = new DateTime(this)
+		this.mouse= new Mouse(this);
+	}
+
+	public init = () => {
+		return this.uxn.init(this);
+	}
+
+	public onStep = () => {
+
+	}
+
+	public dei = (port: number) => {
 		const d = port & 0xf0
 		switch (d) {
 		case 0xc0: return this.datetime.dei(port)
@@ -34,9 +74,7 @@ export function Emu ()
 		return this.uxn.dev[port]
 	}
 
-	this.onStep = (...args) => {};
-
-	this.deo = (port, val) => {
+	public deo = (port: number, val: number) => {
 		this.uxn.dev[port] = val
 		switch(port) {
 		// System
@@ -51,10 +89,12 @@ export function Emu ()
 		case 0x18: this.console.write(val); break;
 		case 0x19: this.console.error(val); break;
 		// Screen
-		case 0x22, 0x23: 
+		case 0x22:
+		case 0x23: 
 			this.screen.set_width(peek16(this.uxn.dev, 0x22));
 			break;
-		case 0x24, 0x25: 
+		case 0x24:
+		case 0x25: 
 			this.screen.set_height(peek16(this.uxn.dev, 0x24));
 			break;
 		case 0x2e: {
@@ -75,7 +115,7 @@ export function Emu ()
 		}
 	}
 
-	this.pointer_moved = (event) => {
+	public pointer_moved = (event: MouseEvent) => {
 		const bounds = this.bgCanvas.getBoundingClientRect();
 		const x = this.bgCanvas.width * (event.clientX - bounds.left) / bounds.width;
 		const y = this.bgCanvas.height * (event.clientY - bounds.top) / bounds.height;
@@ -83,22 +123,17 @@ export function Emu ()
 		event.preventDefault();
 	}
 
-	this.pointer_down = (event) => {
+	public pointer_down = (event: MouseEvent) => {
 		this.mouse.down(event.buttons)
 		event.preventDefault();
 	}
 
-	this.pointer_up = (event) => {
+	public pointer_up = (event: MouseEvent) => {
 		this.mouse.up(event.buttons)
 		event.preventDefault();
 	}
 
-	this.screen_callback = () => {
+	public screen_callback = () => {
 		this.uxn.eval(peek16(this.uxn.dev, 0x20))
 	}
-
-	this.init = () => {
-		return this.uxn.init(this);
-	}
 }
-

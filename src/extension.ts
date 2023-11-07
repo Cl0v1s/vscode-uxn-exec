@@ -203,15 +203,21 @@ class UxnPanel {
 					<canvas id="bgcanvas" width="100" height="100"></canvas>
 					<canvas id="fgcanvas" width="100" height="100"></canvas>
 				</div>
-				<div id="console">
-					<div>
-						<span>standard output</span>
-						<pre id='console_std'></pre>
-						<input type="text" id="console_input" placeholder="Console">
+				<div>
+					<div id="stacks">
+						<div id="wst" />
+						<div id="rst" />
 					</div>
-					<div>
-						<span>error output</span>
-						<pre id='console_err'></pre>
+					<div id="console">
+						<div>
+							<span>standard output</span>
+							<pre id='console_std'></pre>
+							<input type="text" id="console_input" placeholder="Console">
+						</div>
+						<div>
+							<span>error output</span>
+							<pre id='console_err'></pre>
+						</div>
 					</div>
 				</div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>

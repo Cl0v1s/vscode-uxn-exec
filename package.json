@@ -37,6 +37,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
+    "@types/web": "^0.0.119",
     "@vscode/vsce": "^2.22.0",
     "arcsecond": "^4.1.0"
   },
