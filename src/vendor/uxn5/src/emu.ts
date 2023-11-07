@@ -25,15 +25,22 @@ export class Emu {
 	public mouse: Mouse;
 	public fgCanvas: HTMLCanvasElement;
 	public bgCanvas: HTMLCanvasElement;
+	public wst: HTMLElement;
+	public rst: HTMLElement;
+	private debug: boolean;
 
-	constructor(console_std: HTMLElement, console_err: HTMLElement, bgCanvas: HTMLCanvasElement, fgCanvas: HTMLCanvasElement) {
-		if (typeof UxnWASM !== 'undefined') {
+	constructor(debug: boolean, wst: HTMLElement, rst: HTMLElement, console_std: HTMLElement, console_err: HTMLElement, bgCanvas: HTMLCanvasElement, fgCanvas: HTMLCanvasElement) {
+		if (!debug && typeof UxnWASM !== 'undefined') {
 			console.log("Using WebAssembly core");
 			this.uxn = new (UxnWASM.Uxn)(this)
 		} else {
-			console.log("Using Vanilla JS core");
+			console.log("Using Vanilla JS core, debug mode");
 			this.uxn = new Uxn(this)
 		}
+
+		this.debug = debug;
+		this.wst = wst;
+		this.rst = rst;
 
 		this.bgCanvas = bgCanvas;
 		this.fgCanvas = fgCanvas;
@@ -57,12 +64,36 @@ export class Emu {
 		this.mouse= new Mouse(this);
 	}
 
-	public init = () => {
-		return this.uxn.init(this);
+	public init = async () => {
+		const boot = await this.uxn.init(this);
+		if(this.debug) {
+			this.updateStack(this.wst, 0x10000);
+			this.updateStack(this.rst, 0x11000);
+		}
+		return boot;
 	}
 
-	public onStep = () => {
+	private updateStack(el: HTMLElement, addr: number) {
+		const stackptr = (this.uxn.ram[addr + 0xff] as number).toString(16).padStart(2, '0');
+		const values = [];
+		for(let i = 0; i < this.uxn.ram[addr + 0xff]; i++) {
+			values.push(`0x${(this.uxn.ram[addr + i] as number).toString(16).padStart(2, '0')}`);
+		}
+		el.innerHTML = `
+			<strong>stack ptr: 0x${stackptr}</strong>
+			<div>
+				[${values.join(" ")}]
+			</div>
+		`;
+	}
 
+	public onStep = () => null;
+
+	public afterStep = () => {
+		if(this.debug) {
+			this.updateStack(this.wst, 0x10000);
+			this.updateStack(this.rst, 0x11000);
+		}
 	}
 
 	public dei = (port: number) => {

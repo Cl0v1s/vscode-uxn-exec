@@ -150,6 +150,8 @@ class UxnPanel {
 						justify-content: center; 
 						flex-wrap: wrap;
 						gap: 8px;
+						overflow: auto;
+						height: auto;
 					}
 					div#term { width:100%; background:#000; padding:10px; color:white; height:55px; overflow:scroll; white-space:pre; display:none }
 					div#stack { width:100%; height:25px; background:#72dec2; padding:10px; margin-bottom:20px;font-weight:bold; display:none }
@@ -175,16 +177,20 @@ class UxnPanel {
 
 					#console>div {
 						flex-grow: 1;
+						min-width: 0;
+						flex-shrink: 0;
+						flex-basis: 0;
 						padding: 4px;
 						height: 100%;
 					}
 
-					#console>div>span {
+					strong {
 						font-weight: bold;    
 						color: var(--vscode-breadcrumb-foreground);
 					}
 
-					#console #console_std {
+					#console #console_std, #console #console_err {
+						overflow: auto;
 					}
 
 					#console_err { 
@@ -203,22 +209,25 @@ class UxnPanel {
 					<canvas id="bgcanvas" width="100" height="100"></canvas>
 					<canvas id="fgcanvas" width="100" height="100"></canvas>
 				</div>
-				<div>
+				<div style="max-width: 100%">
 					<div id="stacks">
-						<div id="wst" />
-						<div id="rst" />
+						<div id="wst"></div>
+						<div id="rst"></div>
 					</div>
 					<div id="console">
 						<div>
-							<span>standard output</span>
+							<strong>standard output</strong>
 							<pre id='console_std'></pre>
 							<input type="text" id="console_input" placeholder="Console">
 						</div>
 						<div>
-							<span>error output</span>
+							<strong>error output</strong>
 							<pre id='console_err'></pre>
 						</div>
 					</div>
+					<label>
+						<input id="debug" type="checkbox" /> debug mode
+					</label>
 				</div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>

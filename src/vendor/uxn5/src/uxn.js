@@ -122,7 +122,7 @@ export function Uxn (emu)
 		if(!pc || this.dev[0x0f])
 			return 0;
 		while((instr = this.ram[pc++])) {
-			emu.onStep(pc, instr)
+			emu.onStep(pc, instr);
 			// registers
 			this.r2 = instr & 0x20
 			this.rr = instr & 0x40
@@ -187,6 +187,7 @@ export function Uxn (emu)
 			case 0x1e: /* EOR */ a = this.pop(); b = this.pop(); this.push(b ^ a); break;
 			case 0x1f: /* SFT */ a = this.src.pop8(); b = this.pop(); this.push(b >> (a & 0x0f) << ((a & 0xf0) >> 4)); break;
 			}
+			emu.afterStep(pc, instr);
 		}
 	}
 

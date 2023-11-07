@@ -11,7 +11,13 @@ function buffer(data: string) { return new Uint8Array((data.match(/../g) as RegE
 const vscode = acquireVsCodeApi();
 
 async function init() {
-    const emulator = new Emu(document.getElementById("console_std") as HTMLElement, document.getElementById("console_err")  as HTMLElement, document.getElementById("bgcanvas")  as HTMLCanvasElement, document.getElementById("fgcanvas")  as HTMLCanvasElement);
+    const debug = document.getElementById("debug") as HTMLInputElement;
+    const emulator = new Emu(
+        debug.checked,
+        document.getElementById("wst") as HTMLElement, document.getElementById("rst") as HTMLElement,
+        document.getElementById("console_std") as HTMLElement, document.getElementById("console_err")  as HTMLElement, 
+        document.getElementById("bgcanvas")  as HTMLCanvasElement, document.getElementById("fgcanvas")  as HTMLCanvasElement
+    );
     await emulator.init();
 
     const console_input = document.getElementById("console_input") as HTMLInputElement;
