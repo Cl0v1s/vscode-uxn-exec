@@ -30,7 +30,6 @@ opCodes.forEach((op, i) => {
   }
 })
 
-console.log(hexOpCodes);
 
 const LIT = '80'
 const LIT2 = 'a0'
