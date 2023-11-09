@@ -140,7 +140,6 @@ export function Uxn (emu)
 			}
 
 			opcode = instr & 0x1f;
-			console.log(opcode - (!opcode * (instr >> 5)).toString(16))
 			switch(opcode - (!opcode * (instr >> 5))) {
 			/* Literals/Calls */
 			case -0x0: /* BRK */ return 1;
