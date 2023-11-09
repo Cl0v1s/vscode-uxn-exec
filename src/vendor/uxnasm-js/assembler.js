@@ -14,7 +14,7 @@ const toHex = (i) => {
   return result
 }
 
-const opCodes = ['BRK', 'INC', 'POP', 'DUP', 'NIP', 'SWP', 'OVR', 'ROT', 'EQU',
+const opCodes = ['BRK', 'INC', 'POP', 'NIP', 'SWP', 'ROT', 'DUP', 'OVR', 'EQU',
   'NEQ', 'GTH', 'LTH', 'JMP', 'JCN', 'JSR', 'STH', 'LDZ', 'STZ',
   'LDR', 'STR', 'LDA', 'STA', 'DEI', 'DEO', 'ADD', 'SUB', 'MUL',
   'DIV', 'AND', 'ORA', 'EOR', 'SFT', 'LIT', 'LIT2']
@@ -29,6 +29,8 @@ opCodes.forEach((op, i) => {
     hexOpCodes.set(op, toHex(i))
   }
 })
+
+console.log(hexOpCodes);
 
 const LIT = '80'
 const LIT2 = 'a0'
