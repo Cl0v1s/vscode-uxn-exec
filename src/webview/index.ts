@@ -63,7 +63,6 @@ window.addEventListener('message', async (event: any) => {
     switch (message.command) {
         case 'init': {
             vscode.setState({ documentUri: message.documentUri });
-            run(message.code);
         }
         case 'run':
             run(message.code);

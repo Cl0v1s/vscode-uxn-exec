@@ -15,8 +15,11 @@ import { DateTime } from './devices/datetime';
 import { Mouse } from './devices/mouse';
 // @ts-ignore
 import { peek16 } from './utils';
+import { File } from './devices/file';
 
-export class Emu {
+import { IEmu } from './types';
+
+export class Emu implements IEmu {
 	public uxn: Uxn | UxnWASM.Uxn;
 	public console:  Console;
 	public controller: Controller;
@@ -28,8 +31,10 @@ export class Emu {
 	public wst: HTMLElement;
 	public rst: HTMLElement;
 	private debug: boolean;
+	private file1: File;
+	private file2: File;
 
-	constructor(debug: boolean, wst: HTMLElement, rst: HTMLElement, console_std: HTMLElement, console_err: HTMLElement, bgCanvas: HTMLCanvasElement, fgCanvas: HTMLCanvasElement) {
+	constructor(debug: boolean, wst: HTMLElement, rst: HTMLElement, console_std: HTMLElement, console_err: HTMLElement, bgCanvas: HTMLCanvasElement, fgCanvas: HTMLCanvasElement, onFileWrite1: undefined | ((str: string) => void) = undefined, onFileWrite2: undefined | ((str: string) => void) = undefined) {
 		if (!debug && typeof UxnWASM !== 'undefined') {
 			console.log("Using WebAssembly core");
 			this.uxn = new (UxnWASM.Uxn)(this)
@@ -44,6 +49,9 @@ export class Emu {
 
 		this.bgCanvas = bgCanvas;
 		this.fgCanvas = fgCanvas;
+
+		this.file1 = new File(this, "", onFileWrite1);
+		this.file2 = new File(this, "", onFileWrite2);
 
 		this.console = new Console(this)
 		this.console.write_el = console_std;
@@ -99,8 +107,11 @@ export class Emu {
 	public dei = (port: number) => {
 		const d = port & 0xf0
 		switch (d) {
-		case 0xc0: return this.datetime.dei(port)
-		case 0x20: return this.screen.dei(port)
+			case 0xc0: return this.datetime.dei(port)
+			case 0x20: return this.screen.dei(port)
+			// File
+			case 0xa0: return this.file1.dei(port)
+			case 0xb0: return this.file2.dei(port)
 		}
 		return this.uxn.dev[port]
 	}
@@ -143,6 +154,58 @@ export class Emu {
 			const ptr = peek16(this.uxn.dev, 0x2c)
 			this.screen.draw_sprite(ctrl, x, y, move, ptr);
 			break; }
+		// File 
+		// vector
+		case 0xa0:
+		case 0xa1: break;
+		// success
+		case 0xa2:
+		case 0xa3: break;
+		// stat
+		case 0xa4:
+		case 0xa5: break;
+		// delete 
+		case 0xa6: break;
+		// append
+		case 0xa7: this.file1.setAppend(val);
+		// name
+		case 0xa8: break;
+		case 0xa9: this.file1.setName(); break;
+		// length
+		case 0xaa: break;
+		case 0xab: this.file1.setLength(peek16(this.uxn.dev, 0xaa)); break;
+		// read 
+		case 0xac: break;
+		case 0xad: this.file1.setRead(peek16(this.uxn.dev, 0xac)); break;
+		// write 
+		case 0xae: break;
+		case 0xaf: this.file1.setWrite(peek16(this.uxn.dev, 0xae)); break;
+		// File 
+		// vector
+		case 0xb0:
+		case 0xb1: break;
+		// success
+		case 0xb2:
+		case 0xb3: break;
+		// stat
+		case 0xb4:
+		case 0xb5: break;
+		// delete 
+		case 0xb6: break;
+		// append
+		case 0xb7: this.file2.setAppend(val);
+		// name
+		case 0xb8: break;
+		case 0xb9: this.file2.setName(); break;
+		// length
+		case 0xba: break;
+		case 0xbb: this.file2.setLength(peek16(this.uxn.dev, 0xba)); break;
+		// read 
+		case 0xbc: break;
+		case 0xbd: this.file2.setRead(peek16(this.uxn.dev, 0xbc)); break;
+		// write 
+		case 0xbe: break;
+		case 0xbf: this.file2.setWrite(peek16(this.uxn.dev, 0xbe)); break;
 		}
 	}
 
