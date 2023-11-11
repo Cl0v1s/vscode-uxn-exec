@@ -1,0 +1,2 @@
+docker run --rm -v .:/src  emscripten/emsdk emcc -s "EXTRA_EXPORTED_RUNTIME_METHODS=['FS']" --pre-js pre-js.js uxnasm.c -o uxnasm.js
+echo "Ensure that uxnasm.js is wrapped in a ES module exposing an assemble function tacking uxntal code in param and returning a the compiled code via UInt8Array"

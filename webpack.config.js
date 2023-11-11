@@ -21,6 +21,9 @@ const extensionConfig = {
         type: "window",
       },
     },
+    "uxnasm": {
+      import: './src/vendor/uxn11/uxnasm.wasm',
+    }
   },
   output: {
     clean: true,
@@ -46,8 +49,19 @@ const extensionConfig = {
           {
             loader: 'ts-loader'
           }
-        ]
-      },
+        ],
+        
+      }, {
+        test: /\.wasm$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+            },
+          },
+        ],
+      }
     ]
   },
   devtool: 'nosources-source-map',

@@ -23,9 +23,9 @@ export class File {
     // callback to call with text content after a write operation, will return entire "file" content
     private onWrite: (str: string) => void;
 
-    constructor(emu: IEmu, data: string, onWrite = console.log) {
+    constructor(emu: IEmu, onWrite = console.log) {
         this.emu = emu;
-        this.buffer = buffer(data);
+        this.buffer = new Uint8Array();
         this.onWrite = onWrite;
     }
 

@@ -98,7 +98,7 @@ class UxnPanel {
 		this._disposables.push(handle);
 
 		this._panel.webview.html = this._getHtmlForWebview(this._panel.webview);
-		this._panel.webview.postMessage({ command: 'init', code: this._document.getText(), documentUri: this._document.uri });
+		this._panel.webview.postMessage({ command: 'init', code: this._document.getText(), documentUri: this._document.uri, wasmBinaryFile: this._panel.webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', 'uxnasm.wasm')).toString() });
 	}
 
 	private _update() {
@@ -106,7 +106,7 @@ class UxnPanel {
 	}
 
 	public run(code: string) {
-		this._panel.webview.postMessage({ command: 'run', code });
+		this._panel.webview.postMessage({ command: 'run', code, wasmBinaryFile: this._panel.webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', 'uxnasm.wasm')).toString() });
 	}
 
 	public dispose() {
@@ -138,7 +138,7 @@ class UxnPanel {
 					Use a content security policy to only allow loading images from https or from our extension directory,
 					and only allow scripts that have a specific nonce.
 				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'unsafe-eval' 'nonce-${nonce}';">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src ${webview.cspSource};style-src 'unsafe-inline' ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'unsafe-eval' 'nonce-${nonce}';">
 
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>UXN</title>

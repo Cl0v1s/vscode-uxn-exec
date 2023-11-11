@@ -2,7 +2,7 @@ declare var window: Window;
 declare var document: Document;
 declare var acquireVsCodeApi: () => any;
 // @ts-ignore
-import assemble from './../vendor/uxnasm-js/assembler.js';
+import { assemble } from '../vendor/uxn11/uxnasm.js';
 // @ts-ignore
 import { Emu } from '../vendor/uxn5/src/emu';
 
@@ -44,11 +44,12 @@ async function init() {
     return emulator;
 }
 
-async function run(uxntal: string) {
+async function run(uxntal: string, wasmBinaryFile: string) {
     const emulator = await init();
     // start
     try {
-        const rom = buffer(assemble(uxntal));
+        const rom = await assemble(uxntal, wasmBinaryFile);
+        console.log(rom);
         emulator.console.write_el.innerHTML = `<span style="opacity: 0.7">${new Date().toLocaleTimeString(undefined, { hour: "2-digit", "minute": "2-digit", "second": "2-digit"})} -- reload --</span>\n`;
         emulator.console.error_el.innerHTML = `<span style="opacity: 0.7">${new Date().toLocaleTimeString(undefined, { hour: "2-digit", "minute": "2-digit", "second": "2-digit"})} -- reload --</span>\n`;
         emulator.uxn.load(rom).eval(0x0100);
@@ -63,9 +64,12 @@ window.addEventListener('message', async (event: any) => {
     switch (message.command) {
         case 'init': {
             vscode.setState({ documentUri: message.documentUri });
+            run(message.code, message.wasmBinaryFile);
+            break;
         }
         case 'run':
-            run(message.code);
+            console.log(message);
+            run(message.code, message.wasmBinaryFile);
             break;
     }
 });

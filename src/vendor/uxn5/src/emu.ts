@@ -31,8 +31,8 @@ export class Emu implements IEmu {
 	public wst: HTMLElement;
 	public rst: HTMLElement;
 	private debug: boolean;
-	private file1: File;
-	private file2: File;
+	public file1: File;
+	public file2: File;
 
 	constructor(debug: boolean, wst: HTMLElement, rst: HTMLElement, console_std: HTMLElement, console_err: HTMLElement, bgCanvas: HTMLCanvasElement, fgCanvas: HTMLCanvasElement, onFileWrite1: undefined | ((str: string) => void) = undefined, onFileWrite2: undefined | ((str: string) => void) = undefined) {
 		if (!debug && typeof UxnWASM !== 'undefined') {
@@ -50,8 +50,8 @@ export class Emu implements IEmu {
 		this.bgCanvas = bgCanvas;
 		this.fgCanvas = fgCanvas;
 
-		this.file1 = new File(this, "", onFileWrite1);
-		this.file2 = new File(this, "", onFileWrite2);
+		this.file1 = new File(this, onFileWrite1);
+		this.file2 = new File(this, onFileWrite2);
 
 		this.console = new Console(this)
 		this.console.write_el = console_std;
