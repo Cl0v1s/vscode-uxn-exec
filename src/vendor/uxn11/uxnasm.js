@@ -1,5 +1,6 @@
 export function assemble(sourceCode, wasmBinaryFile = undefined) {
   let resolveResult;
+  let rejectResult;
   // include: shell.js
   // The Module object: Our interface to the outside world. We import
   // and export values on it. There are various ways Module can be used:
@@ -27,7 +28,12 @@ export function assemble(sourceCode, wasmBinaryFile = undefined) {
           FS.createDataFile("/tmp", "uxn.tal", sourceCode, true, true);
       },
       'postRun': () => {
-        resolveResult(FS.readFile('/tmp/uxn.rom'));
+        try {
+          const res = FS.readFile('/tmp/uxn.rom');
+          resolveResult(res);
+        } catch (e) {
+          rejectResult(e);
+        }
       }
   }
 
@@ -4806,6 +4812,6 @@ export function assemble(sourceCode, wasmBinaryFile = undefined) {
 
   run();
 
-  return new Promise((res) => { resolveResult = res});
+  return new Promise((res, rej) => { resolveResult = res; rejectResult = rej; });
 }
 // end include: postamble.js
