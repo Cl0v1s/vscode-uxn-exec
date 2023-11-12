@@ -162,6 +162,9 @@ class UxnPanel {
 						max-width: max-content;
 						max-height: max-content;
 					}
+					#screen canvas {
+						width: 512px;
+					}
 					#screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000 }
 					#screen #fgcanvas { position: absolute; left: 2px; top: 2px; z-index: 1 }
 
