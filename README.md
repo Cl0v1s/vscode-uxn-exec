@@ -30,9 +30,5 @@ If you encounter any issues, have questions, or would like to contribute to this
 
 ## Acknowledgments
 
-Certainly! Here's the updated Acknowledgments section:
-
-## Acknowledgments
-
 Special thanks to the UXN community and the Visual Studio Code extension development community for their support and contributions. 
 This work is based on the [UXN assembler written in JavaScript](https://github.com/rafapaezbas/uxnasm-js) by [rafapaezbas](https://github.com/rafapaezbas) and the [Varvara emulator in JavaScript](https://git.sr.ht/~rabbits/uxn5) by [Rek](https://merveilles.town/@rek), which have been integral in making this extension possible.
