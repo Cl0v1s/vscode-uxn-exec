@@ -14,7 +14,7 @@ with the language when I'm on the road with only my tablet (and it's extensive b
 
 ## Usage
 
-1. Open a `.uxn` file in Visual Studio Code.
+1. Open a `.tal` file in Visual Studio Code.
 2. Use the keyboard shortcut `Ctrl + Shift + P` (or `Cmd + Shift + P` on macOS) to open the command palette.
 3. Type `Run UXN` and select it from the dropdown list.
 
